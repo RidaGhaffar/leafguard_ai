@@ -23,7 +23,16 @@ leafguard_ai/
 ├── preprocessing.ipynb             # Phase 1: Tabular and CV image preprocessing pipeline
 ├── eda_feature_engineering.ipynb   # Phase 2: Feature engineering and visual EDA profiling
 ├── model_training_evaluation.ipynb # Phase 3: Model training, evaluation, and cross-validation
+├── app.py                          # Streamlit application UI & frontend dashboard (FR-09 reports)
 ├── report.pdf                      # Phase 1 PDF Report (Milestone 1)
+├── requirements.txt                # Python libraries locked dependencies
+│
+├── src/                            # Modular Python backend scripts
+│   ├── __init__.py
+│   ├── preprocessing.py            # Preprocessing cleaning & real-time image quality checks
+│   ├── features.py                 # Feature engineering attribute equations
+│   └── predict.py                  # Predictor class running model inference
+│
 └── README.md                       # Documentation and project walkthrough
 ```
 
@@ -46,22 +55,31 @@ Focuses on creating rich attributes and visually profiling relationships within 
 
 ## Milestone 3: Model Training & Evaluation
 Focuses on building classification models, validating their performance, and choosing the optimal classifier.
-
-### 1. Model Training & Cross-Validation
-*   **Train-Test Partition:** Implemented a stratified 80/20 train-test split to maintain class balance.
 *   **Algorithms Evaluated:** Trained and compared **Logistic Regression**, **Random Forest Classifier**, and **Support Vector Machine (SVM)**.
 *   **Robustness Checking:** Applied **5-Fold Cross-Validation** on the training set to prevent overfitting.
-    *   *Logistic Regression:* stable baseline but unable to fit non-linear relations.
-    *   *Support Vector Machine:* high accuracy, boundary constructed via scaling margins.
-    *   *Random Forest:* highest mean accuracy and F1-Score, showing great variance resilience.
-
-### 2. Model Evaluation Results
-*   **Metrics Tracked:** Accuracy, Precision, Recall, F1-Score, and Confusion Matrix.
-*   **Plots Generated:**
-    *   `confusion_matrices.png`: Shows side-by-side True/False matrices for all models.
-    *   `model_comparison.png`: Shows bar comparisons of F1-Score, Accuracy, Precision, and Recall on the test set.
-*   **Best Model Selected:** **Random Forest Classifier** is selected as the primary classifier for LeafGuard AI due to its high F1-Score, robustness to multi-crop variations, and natural resistance to pixel quality outliers.
 *   **Jupyter Notebook:** [model_training_evaluation.ipynb](file:///C:/Users/Admin/.gemini/antigravity/scratch/leafguard_ai/model_training_evaluation.ipynb)
+
+---
+
+## Milestone 4 & 5: ML Project Deployment (Phase 1 & 2)
+Focuses on packaging the model into a modular, production-ready web application.
+
+### 1. Serialized Binaries (`models/`)
+*   `leafguard_model.joblib`: Serialized Random Forest Classifier weights.
+*   `scaler.joblib`: Serialized StandardScaler.
+*   `feature_names.joblib`: Column template.
+
+### 2. Modular Backend Scripts (`src/`)
+*   `src/preprocessing.py`: Real-time image quality inspection checks (exposure range, Laplacian variance blur threshold, size limits).
+*   `src/features.py`: Computes engineered dimensions dynamically.
+*   `src/predict.py`: Reindexes one-hot encoded crop features, scales variables, executes model decision trees, and returns status outputs with treatment advisories.
+
+### 3. Streamlit Dashboard App (`app.py`)
+*   **Quality Metrics Indicator**: Computes file size, exposure, and sharpness dynamically upon file upload.
+*   **Model Prediction**: Outputs Healthy vs. Diseased leaf status with prediction confidence.
+*   **XAI Heatmap**: Toggles mock Grad-CAM overlay to highlight infection spots.
+*   **Treatment Cards**: Renders organic and chemical advisory guides.
+*   **Diagnostic Report Export (FR-09)**: Interactive sidebar history list that allows users to export and download their diagnostic logs as a CSV report sheet.
 
 ---
 
@@ -70,15 +88,12 @@ Focuses on building classification models, validating their performance, and cho
 ### 1. Install Dependencies
 Run the following command to install the required libraries:
 ```bash
-pip install pandas numpy scikit-learn imbalanced-learn matplotlib seaborn notebook nbformat
+pip install -r requirements.txt
 ```
 
-### 2. Run Notebooks
-Open the project directory in your terminal and launch Jupyter:
+### 2. Run the Application
+Start the Streamlit server locally:
 ```bash
-jupyter notebook
+streamlit run app.py
 ```
-Browse and execute the cells of:
-*   `preprocessing.ipynb` (Phase 1)
-*   `eda_feature_engineering.ipynb` (Phase 2)
-*   `model_training_evaluation.ipynb` (Phase 3)
+This will open the dashboard in your default browser at `http://localhost:8501`.

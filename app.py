@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+import pandas as pd
 import numpy as np
 import cv2
 from PIL import Image
@@ -127,6 +128,17 @@ crop_choice = st.sidebar.selectbox(
 st.sidebar.markdown("---")
 st.sidebar.markdown("<h3 style='color:#0f3d24; font-weight:600;'>Diagnosis History</h3>", unsafe_allowed_value=True)
 if st.session_state.history:
+    # CSV Exporter
+    history_df = pd.DataFrame(st.session_state.history)
+    csv_data = history_df.to_csv(index=False).encode('utf-8')
+    st.sidebar.download_button(
+        label="📥 Export Report (CSV)",
+        data=csv_data,
+        file_name="leafguard_diagnostics_report.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
+    st.sidebar.write("") # Spacer
     for idx, item in enumerate(reversed(st.session_state.history[-5:])):
         color = "#e6fffa" if item['status'] == "Healthy" else "#fff5f5"
         border = "319795" if item['status'] == "Healthy" else "e53e3e"

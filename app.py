@@ -1,8 +1,8 @@
 import os
 import sys
 
-# Ensure the folder containing app.py is in the Python path to locate the 'src' package
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Ensure the local project folder has the highest priority in the Python path
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import streamlit as st
 import pandas as pd

@@ -1,4 +1,9 @@
 import os
+import sys
+
+# Ensure the folder containing app.py is in the Python path to locate the 'src' package
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -71,7 +76,7 @@ st.markdown("""
         font-weight: 600;
     }
     </style>
-""", unsafe_allowed_value=True)
+""", unsafe_allow_html=True)
 
 # Initialize Session State for history
 if 'history' not in st.session_state:
@@ -116,7 +121,7 @@ except Exception as e:
     predictor = None
 
 # Sidebar Content
-st.sidebar.markdown("<h2 style='color:#0f3d24; font-weight:800;'>🍃 LeafGuard AI</h2>", unsafe_allowed_value=True)
+st.sidebar.markdown("<h2 style='color:#0f3d24; font-weight:800;'>🍃 LeafGuard AI</h2>", unsafe_allow_html=True)
 st.sidebar.write("Plant Disease Diagnostics & Quality Control Dashboard.")
 
 crop_choice = st.sidebar.selectbox(
@@ -126,7 +131,7 @@ crop_choice = st.sidebar.selectbox(
 
 # Sidebar History Feed
 st.sidebar.markdown("---")
-st.sidebar.markdown("<h3 style='color:#0f3d24; font-weight:600;'>Diagnosis History</h3>", unsafe_allowed_value=True)
+st.sidebar.markdown("<h3 style='color:#0f3d24; font-weight:600;'>Diagnosis History</h3>", unsafe_allow_html=True)
 if st.session_state.history:
     # CSV Exporter
     history_df = pd.DataFrame(st.session_state.history)
@@ -147,13 +152,13 @@ if st.session_state.history:
                 <small style='color:#718096;'>{item['timestamp']}</small><br/>
                 <strong>{item['crop']}</strong> - <span style='font-size:0.85rem;'>{item['status']} ({item['conf']:.1%})</span>
             </div>
-        """, unsafe_allowed_value=True)
+        """, unsafe_allow_html=True)
 else:
     st.sidebar.write("No predictions run in this session.")
 
 # Main Layout
-st.markdown("<h1 class='main-title'>LeafGuard AI: Plant Pathology Portal</h1>", unsafe_allowed_value=True)
-st.markdown("<p class='sub-title'>Verify leaf quality metrics, execute model inference, and access treatment advisories.</p>", unsafe_allowed_value=True)
+st.markdown("<h1 class='main-title'>LeafGuard AI: Plant Pathology Portal</h1>", unsafe_allow_html=True)
+st.markdown("<p class='sub-title'>Verify leaf quality metrics, execute model inference, and access treatment advisories.</p>", unsafe_allow_html=True)
 
 col_left, col_right = st.columns([1, 1])
 
@@ -161,7 +166,7 @@ col_left, col_right = st.columns([1, 1])
 sample_path = "sample_leaf.jpg"
 
 with col_left:
-    st.markdown("<h4 style='color:#0f3d24;'>Image Upload & Input</h4>", unsafe_allowed_value=True)
+    st.markdown("<h4 style='color:#0f3d24;'>Image Upload & Input</h4>", unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Upload Leaf Image (JPEG/PNG)", type=["jpg", "jpeg", "png"])
     
     if uploaded_file is not None:
@@ -196,7 +201,7 @@ if image is not None:
     quality = detect_image_quality(file_size_kb, brightness, blurriness_score)
     
     with col_right:
-        st.markdown("<h4 style='color:#0f3d24;'>Image Quality Metrics (IQR Filters)</h4>", unsafe_allowed_value=True)
+        st.markdown("<h4 style='color:#0f3d24;'>Image Quality Metrics (IQR Filters)</h4>", unsafe_allow_html=True)
         
         m_col1, m_col2, m_col3 = st.columns(3)
         
@@ -210,7 +215,7 @@ if image is not None:
                     <div class='metric-value'>{file_size_kb:.1f} KB</div>
                     <div class='metric-status' style='color:{status_color};'>{status_text}</div>
                 </div>
-            """, unsafe_allowed_value=True)
+            """, unsafe_allow_html=True)
             
         # Metric 2: Brightness
         with m_col2:
@@ -223,7 +228,7 @@ if image is not None:
                     <div class='metric-value'>{brightness:.1f}</div>
                     <div class='metric-status' style='color:{status_color};'>{status_text}</div>
                 </div>
-            """, unsafe_allowed_value=True)
+            """, unsafe_allow_html=True)
             
         # Metric 3: Blurriness
         with m_col3:
@@ -235,7 +240,7 @@ if image is not None:
                     <div class='metric-value'>{blurriness_score:.1f}</div>
                     <div class='metric-status' style='color:{status_color};'>{status_text}</div>
                 </div>
-            """, unsafe_allowed_value=True)
+            """, unsafe_allow_html=True)
             
         # If quality check failed
         if not quality["is_valid"]:
@@ -245,7 +250,7 @@ if image is not None:
             st.warning("Prediction might be inaccurate. Please re-capture leaf in focus with proper lighting.")
             
         # Inference Pipeline
-        st.markdown("<h4 style='color:#0f3d24; margin-top:20px;'>Model Inference Results</h4>", unsafe_allowed_value=True)
+        st.markdown("<h4 style='color:#0f3d24; margin-top:20px;'>Model Inference Results</h4>", unsafe_allow_html=True)
         
         # Prepare feature input dict
         input_data = {
@@ -268,14 +273,14 @@ if image is not None:
                         <span style='font-size:1.4rem;'>🍃 Healthy Leaf Detected</span><br/>
                         <span style='font-size:0.95rem; font-weight:400;'>Model Confidence: {result['confidence']:.2%}</span>
                     </div>
-                """, unsafe_allowed_value=True)
+                """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                     <div class='status-diseased'>
                         <span style='font-size:1.4rem;'>⚠️ Diseased Leaf Detected</span><br/>
                         <span style='font-size:0.95rem; font-weight:400;'>Model Confidence: {result['confidence']:.2%}</span>
                     </div>
-                """, unsafe_allowed_value=True)
+                """, unsafe_allow_html=True)
                 
             # Log to History list
             import datetime
@@ -290,12 +295,12 @@ if image is not None:
                 })
                 
             # Treatment Advisory Panel
-            st.markdown("<h4 style='color:#0f3d24; margin-top:20px;'>Treatment Advisory</h4>", unsafe_allowed_value=True)
+            st.markdown("<h4 style='color:#0f3d24; margin-top:20px;'>Treatment Advisory</h4>", unsafe_allow_html=True)
             with st.expander("Expand Treatment Guidance", expanded=True):
                 st.info(result['recommendation'])
                 
             # Explainability Section
-            st.markdown("<h4 style='color:#0f3d24; margin-top:20px;'>Explainable AI Overlay</h4>", unsafe_allowed_value=True)
+            st.markdown("<h4 style='color:#0f3d24; margin-top:20px;'>Explainable AI Overlay</h4>", unsafe_allow_html=True)
             show_cam = st.toggle("Enable Grad-CAM Heatmap overlay", value=False)
             
             if show_cam:

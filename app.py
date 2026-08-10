@@ -164,6 +164,7 @@ col_left, col_right = st.columns([1, 1])
 
 # Set a default sample image path
 sample_path = "sample_leaf.jpg"
+img_np = None
 
 with col_left:
     st.markdown("<h4 style='color:#0f3d24;'>Image Upload & Input</h4>", unsafe_allow_html=True)
@@ -190,6 +191,7 @@ with col_left:
             width, height = 256, 256
             brightness = 145.2
             blurriness_score = 42.1
+            img_np = np.array(image.convert("RGB"))
             st.image(image, caption="Sample Leaf Image (No file uploaded)", use_container_width=True)
         else:
             st.warning("Please upload a leaf image to begin.")
@@ -198,7 +200,7 @@ with col_left:
 # Metrics & Predictions
 if image is not None:
     # Run Preprocessing Quality Check
-    quality = detect_image_quality(file_size_kb, brightness, blurriness_score)
+    quality = detect_image_quality(img_np, file_size_kb, brightness, blurriness_score)
     
     with col_right:
         st.markdown("<h4 style='color:#0f3d24;'>Image Quality Metrics (IQR Filters)</h4>", unsafe_allow_html=True)
@@ -263,8 +265,8 @@ if image is not None:
         }
         
         if predictor is not None:
-            # Predict
-            result = predictor.predict(input_data)
+            # Predict with real-time HSV diagnostic checks
+            result = predictor.predict(input_data, img_np=img_np)
             
             # Display Result
             if result['status'] == "Healthy":
